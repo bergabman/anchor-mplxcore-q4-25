@@ -117,9 +117,9 @@ describe("anchor-mplxcore-q4-25", () => {
     it("Create a collection", async () => {
       const args = {
         name: "Test Collection",
-        uri: "https://devnet.irys.xyz/AVP2F8semKXE4WBpjg1bcWuR2smwHhF27YzJZpxRygbb",
+        uri: "https://devnet.irys.xyz/yourhashhere",
         nftName: "Test NFT",
-        nftUri: "https://gateway.irys.xyz/3FHFA6Uah7N2HLNEduENWRUpoM2bkwMptQSaHk73jgRN",
+        nftUri: "https://gateway.irys.xyz/yourhashhere",
       };
 
       try {
@@ -155,9 +155,9 @@ describe("anchor-mplxcore-q4-25", () => {
     it("Non-whitelisted creator cannot create a collection", async () => {
       const args = {
         name: "Invalid Collection",
-        uri: "https://example.com/invalid.json",
+        uri: "https://example.com/invalid-uri",
         nftName: "Invalid NFT",
-        nftUri: "https://example.com/invalid-nft.json",
+        nftUri: "https://example.com/invalid-nft-uri",
       };
 
       try {
