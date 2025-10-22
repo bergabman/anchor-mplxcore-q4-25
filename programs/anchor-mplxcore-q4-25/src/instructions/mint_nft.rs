@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use mpl_core::{
     instructions::CreateV2CpiBuilder,
-    types::{Attribute, Attributes, FreezeDelegate, Plugin, PluginAuthority, PluginAuthorityPair},
+    types::{Attribute, Attributes, BurnDelegate, FreezeDelegate, Plugin, PluginAuthority, PluginAuthorityPair},
     ID as CORE_PROGRAM_ID,
 };
 
@@ -14,6 +14,7 @@ pub struct MintNft<'info> {
     #[account(mut, constraint = asset.data_is_empty() @ MPLXCoreError::AssetAlreadyInitialized)]
     pub asset: Signer<'info>,
     #[account(
+        mut,
         constraint = collection.owner == &CORE_PROGRAM_ID @ MPLXCoreError::InvalidCollection,
         constraint = !collection.data_is_empty() @ MPLXCoreError::CollectionNotInitialized
     )]
@@ -46,7 +47,7 @@ impl<'info> MintNft<'info> {
             .authority(Some(&self.collection_authority.to_account_info()))
             .payer(&self.minter.to_account_info())
             .owner(Some(&self.minter.to_account_info()))
-            .update_authority(Some(&self.collection_authority.to_account_info()))
+            .update_authority(None)
             .system_program(&self.system_program.to_account_info())
             .name(self.collection_authority.nft_name.clone())
             .uri(self.collection_authority.nft_uri.clone())
@@ -76,6 +77,12 @@ impl<'info> MintNft<'info> {
                 },
                 PluginAuthorityPair {
                     plugin: Plugin::FreezeDelegate(FreezeDelegate { frozen: true }),
+                    authority: Some(PluginAuthority::Address {
+                        address: self.collection_authority.key(),
+                    }),
+                },
+                PluginAuthorityPair {
+                    plugin: Plugin::BurnDelegate(BurnDelegate {}),
                     authority: Some(PluginAuthority::Address {
                         address: self.collection_authority.key(),
                     }),

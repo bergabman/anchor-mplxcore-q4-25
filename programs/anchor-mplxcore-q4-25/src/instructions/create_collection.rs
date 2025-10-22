@@ -16,14 +16,16 @@ pub struct CreateCollectionArgs {
 
 #[derive(Accounts)]
 pub struct CreateCollection<'info> {
-    #[account(mut)]
+    #[account(
+        mut,
+        constraint = whitelisted_creators.contains(&creator.to_account_info()) @ MPLXCoreError::NotAuthorized,
+    )]
     pub creator: Signer<'info>,
     #[account(mut, constraint = collection.data_is_empty() @ MPLXCoreError::CollectionAlreadyInitialized)]
     pub collection: Signer<'info>,
     #[account(
         seeds = [b"whitelist"],
-        bump = whitelisted_creators.bump,
-        constraint = whitelisted_creators.contains(&creator.to_account_info()) @ MPLXCoreError::NotAuthorized,
+        bump,
     )]
     pub whitelisted_creators: Account<'info, WhitelistedCreators>,
     #[account(

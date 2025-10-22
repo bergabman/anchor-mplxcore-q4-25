@@ -10,6 +10,7 @@ use crate::{error::MPLXCoreError, state::CollectionAuthority};
 #[derive(Accounts)]
 pub struct ThawNft<'info> {
     #[account(
+        mut,
         constraint = authority.key() == collection_authority.creator @ MPLXCoreError::NotAuthorized
     )]
     pub authority: Signer<'info>,
@@ -17,6 +18,7 @@ pub struct ThawNft<'info> {
     /// CHECK: This will also be checked by core
     pub asset: UncheckedAccount<'info>,
     #[account(
+        mut,
         constraint = collection.owner == &CORE_PROGRAM_ID @ MPLXCoreError::InvalidCollection,
         constraint = !collection.data_is_empty() @ MPLXCoreError::CollectionNotInitialized
     )]

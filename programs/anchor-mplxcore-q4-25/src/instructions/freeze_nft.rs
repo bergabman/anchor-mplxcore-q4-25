@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 use mpl_core::{
     instructions::UpdatePluginV1CpiBuilder,
     types::{FreezeDelegate, Plugin},
-    ID as CORE_PROGRAM_ID
+    ID as CORE_PROGRAM_ID,
 };
 
 use crate::{error::MPLXCoreError, state::CollectionAuthority};
@@ -10,13 +10,18 @@ use crate::{error::MPLXCoreError, state::CollectionAuthority};
 #[derive(Accounts)]
 pub struct FreezeNft<'info> {
     #[account(
+        mut,
         constraint = authority.key() == collection_authority.creator @ MPLXCoreError::NotAuthorized
     )]
     pub authority: Signer<'info>,
     #[account(mut)]
     /// CHECK: This will also be checked by core
     pub asset: UncheckedAccount<'info>,
-    #[account(mut)]
+    #[account(
+        mut, 
+        constraint = collection.owner == &CORE_PROGRAM_ID @ MPLXCoreError::InvalidCollection,
+        constraint = !collection.data_is_empty() @ MPLXCoreError::CollectionNotInitialized
+    )]
     /// CHECK: This will also be checked by core
     pub collection: UncheckedAccount<'info>,
     #[account(
